@@ -23,16 +23,22 @@ public class Warmup {
     	int max = arr.length - 1;
     	while ( min <= max ){
             int index = (min + max) / 2;
-
     	    int inconsistencies = Consistency.isConsistent(arr);
+
     	    while ( inconsistencies > 0 && !myStack.isEmpty() ){
-    	        index = (int) myStack.pop();
+    	        int temp = (int) myStack.pop();
+    	        if (arr[temp] == x)
+    	            return temp;
+    	        else if (arr[temp] < x)
+    	            min = temp + 1;
+    	        else
+    	            max = temp - 1;
                 inconsistencies = inconsistencies - 1;
             }
     	    if ( arr[index] == x ){
     	        return index;
             }
-            else if (arr[index] <= x) {
+            else if ( arr[index] < x ) {
                 max = index - 1;
             } else {
                 min = index + 1;
