@@ -1,4 +1,4 @@
-
+//dvskflkds
 
 public class Warmup {
     public static int backtrackingSearch(int[] arr, int x, int forward, int back, Stack myStack) {
@@ -22,14 +22,14 @@ public class Warmup {
         // TODO: implement your code here
     	int min = 0;
     	int max = arr.length - 1;
-        int index = (min + max) / 2;
     	while ( min <= max ){
+            int index = (min + max) / 2;
 
     	    if ( arr[index] == x ){
     	        return index;
             }
     	    int inconsistencies = Consistency.isConsistent(arr);
-    	    while ( inconsistencies > 0 & !myStack.isEmpty() ){
+    	    while ( inconsistencies > 0 ){
     	        int temp = (int) myStack.pop();
                 if ( temp > arr[index] ){
                     max = 2 * index - min + 1;
@@ -43,7 +43,6 @@ public class Warmup {
             else
                 max = index - 1;
             myStack.push(arr[index]);
-            index = (min + max) / 2;
         }
     	// Your implementation should contain a this line:
 //    	int inconsistencies = Consistency.isConsistent(arr);
