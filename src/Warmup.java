@@ -1,5 +1,4 @@
 
-
 public class Warmup {
     public static int backtrackingSearch(int[] arr, int x, int forward, int back, Stack myStack) {
         // TODO: implement your code here
@@ -24,25 +23,27 @@ public class Warmup {
     	int max = arr.length - 1;
     	while ( min <= max ){
             int index = (min + max) / 2;
+    	    int inconsistencies = Consistency.isConsistent(arr);
 
+    	    while ( inconsistencies > 0 && !myStack.isEmpty() ){
+    	        int temp = (int) myStack.pop();
+    	        if (arr[temp] == x)
+    	            return temp;
+    	        else if (arr[temp] < x)
+    	            min = temp + 1;
+    	        else
+    	            max = temp - 1;
+                inconsistencies = inconsistencies - 1;
+            }
     	    if ( arr[index] == x ){
     	        return index;
             }
-    	    int inconsistencies = Consistency.isConsistent(arr);
-    	    while ( inconsistencies > 0 ){
-    	        int temp = (int) myStack.pop();
-                if ( temp > arr[index] ){
-                    max = 2 * index - min + 1;
-                }
-                else
-                    min = 2 * index - max - 1;
-                inconsistencies = inconsistencies - 1;
-            }
-            if ( arr[index] > x )
-                min = index + 1;
-            else
+            else if ( arr[index] < x ) {
                 max = index - 1;
-            myStack.push(arr[index]);
+            } else {
+                min = index + 1;
+            }
+            myStack.push(index);
         }
     	// Your implementation should contain a this line:
 //    	int inconsistencies = Consistency.isConsistent(arr);
