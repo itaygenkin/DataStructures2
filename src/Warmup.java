@@ -24,7 +24,7 @@ public class Warmup {
     	int max = arr.length - 1;
     	while ( min <= max ){
             int index = (min + max) / 2;
-            myStack.push(arr[index]);
+
     	    if ( arr[index] == x ){
     	        return index;
             }
@@ -32,16 +32,17 @@ public class Warmup {
     	    while ( inconsistencies > 0 ){
     	        int temp = (int) myStack.pop();
                 if ( temp > arr[index] ){
-                    max = 2 * index - min;
+                    max = 2 * index - min + 1;
                 }
                 else
-                    min = 2 * index - max;
+                    min = 2 * index - max - 1;
                 inconsistencies = inconsistencies - 1;
             }
             if ( arr[index] > x )
                 min = index + 1;
             else
                 max = index - 1;
+            myStack.push(arr[index]);
         }
     	// Your implementation should contain a this line:
 //    	int inconsistencies = Consistency.isConsistent(arr);
