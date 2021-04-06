@@ -19,34 +19,32 @@ public class Warmup {
     }
 
     public static int consistentBinSearch(int[] arr, int x, Stack myStack) {
-        // TODO: implement your code here
-    	int min = 0;
-    	int max = arr.length - 1;
-    	while ( min <= max ){
-            int index = (min + max) / 2;
-
-    	    if ( arr[index] == x ){
-    	        return index;
-            }
-    	    int inconsistencies = Consistency.isConsistent(arr);
-    	    while ( inconsistencies > 0 ){
-    	        int temp = (int) myStack.pop();
-                if ( temp > arr[index] ){
-                    max = 2 * index - min + 1;
-                }
-                else
-                    min = 2 * index - max - 1;
-                inconsistencies = inconsistencies - 1;
-            }
-            if ( arr[index] > x )
-                min = index + 1;
-            else
-                max = index - 1;
-            myStack.push(arr[index]);
-        }
     	// Your implementation should contain a this line:
-//    	int inconsistencies = Consistency.isConsistent(arr);
-    	return -1; // temporal return command to prevent compilation error
+        //int inconsistencies = Consistency.isConsistent(arr);
+    	return consistentBinSearch(arr, x, myStack, 0, arr.length, arr.length % 2);
+    }
+
+    public static int consistentBinSearch(int[] arr, int x, Stack myStack, int min, int max, int odd){
+        int inconsistencies = Consistency.isConsistent(arr);
+        int index = (max + min) /2;
+        myStack.push(arr[index]);
+        while (inconsistencies > 0 && !myStack.isEmpty()){
+            int temp =(int) myStack.pop();
+            if (temp < arr[index])
+                min = max - 2 * min + odd;
+            else
+                max = 2 * max - min + odd;
+            inconsistencies = inconsistencies - 1;
+        }
+        index = (min + max) / 2;
+        if (min + 1 >= max && inconsistencies == 0){
+            if (arr[index] == x)
+                return index;
+            return -1;
+        }
+        if (arr[index] < x)
+            return consistentBinSearch(arr, x,myStack ,index + 1 ,max,(max+min) % 2);
+        return consistentBinSearch(arr, x,myStack ,min ,index,(max+min) % 2);
     }
     
 }
