@@ -1,65 +1,112 @@
-//dfaadfadfa
 
 public class BacktrackingArray implements Array<Integer>, Backtrack {
     private Stack stack;
     private int[] arr;
+    private int inserted;
     // TODO: implement your code here
 
     // Do not change the constructor's signature
     public BacktrackingArray(Stack stack, int size) {
         this.stack = stack;
         arr = new int[size];
+        inserted = 0;
     }
 
     @Override
     public Integer get(int index){
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+    	return arr[index];
     }
 
     @Override
     public Integer search(int k) {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+    	for(int i = 0; i < inserted; i ++)
+    	    if (arr[i] == k)
+    	        return i;
+    	return -1;
     }
 
     @Override
     public void insert(Integer x) {
-        // TODO: implement your code here
+        if(inserted  == arr.length)
+            throw new IllegalArgumentException("array is full");
+        arr[inserted] = x;
+        stack.push(x);
+        stack.push(inserted + 1);
+        inserted = inserted + 1;
     }
 
     @Override
     public void delete(Integer index) {
-        // TODO: implement your code here
+        if (index <= arr.length)
+            throw new IllegalArgumentException("array too small");
+        stack.push(arr[index]);
+        stack.push(-index - 1);
+        for( int i = index; i < inserted - 1; i++)
+            arr[i]= arr[i+1];
+        inserted = inserted - 1;
     }
 
     @Override
     public Integer minimum() {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if (inserted == 0)
+            throw new IllegalArgumentException("there are no values");
+        int min = 0;
+        for (int i = 1; i < inserted; i++)
+            if (arr[min] > arr[i])
+                min = i;
+        return min;
     }
 
     @Override
     public Integer maximum() {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if (inserted == 0)
+            throw new IllegalArgumentException("there are no values");
+        int max = 0;
+        for (int i = 1; i < inserted; i++)
+            if (arr[max] < arr[i])
+                max = i;
+        return max;
     }
 
     @Override
     public Integer successor(Integer index) {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if(inserted < index || inserted <=1 || index < 0 || this.maximum() == arr[index])
+            throw new IllegalArgumentException("wrong input");
+        int ans = maximum();
+        for (int i = 0; i < inserted; i++){
+            if(arr [index] < arr[i] && arr[i] <arr[ans])
+                ans = i;
+        }
+        return ans;
     }
 
     @Override
     public Integer predecessor(Integer index) {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if(inserted < index || inserted <=1 || index < 0 || this.minimum() == arr[index])
+            throw new IllegalArgumentException("wrong input");
+        int ans = minimum();
+        for (int i = 0; i < inserted; i++){
+            if(arr [index] > arr[i] && arr[i] > arr[ans])
+                ans = i;
+        }
+        return ans;
     }
 
     @Override
     public void backtrack() {
-        // TODO: implement your code here
+        if (!stack.isEmpty()){
+            int index = (int) stack.pop();
+            int value = (int) stack.pop();
+            if (index > 0)
+                delete(index -1);
+            else{
+                index = 1 -index;
+                for(int i = inserted; i > index; i --)
+                    arr[i+1] = arr[i];
+                arr[index] = value;
+                inserted = inserted + 1;
+            }
+        }
     }
 
     @Override
@@ -71,7 +118,12 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public void print() {
-        // TODO: implement your code here
+        String str = "";
+        if (inserted != 0)
+            str = Integer.toString(arr[0]);
+        for(int i = 1; i<inserted; i++){
+            str = str + " " +Integer.toString(arr[i]);
+        }
+        System.out.println(str);
     }
-    
 }
