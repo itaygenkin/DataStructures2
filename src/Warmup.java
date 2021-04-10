@@ -31,19 +31,15 @@ public class Warmup {
     	        min = (int) myStack.pop();
     	        if (arr[index] == x)
     	            return index;
-    	        else if (arr[index] < x)
-    	            min = index + 1;
-    	        else
-    	            max = index - 1;
-                inconsistencies = inconsistencies - 1;
+                inconsistencies = Consistency.isConsistent(arr); //to be assure that 'inconsistencies' is currently correct
             }
     	    if ( arr[index] == x ){
     	        return index;
             }
             else if ( arr[index] < x ) {
-                max = index - 1;
-            } else {
                 min = index + 1;
+            } else {
+                max = index - 1;
             }
             myStack.push(min);
             myStack.push(index);
