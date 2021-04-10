@@ -19,32 +19,32 @@ public class Warmup {
     }
 
     public static int consistentBinSearch(int[] arr, int x, Stack myStack) {
-    	// Your implementation should contain a this line:
-        //int inconsistencies = Consistency.isConsistent(arr);
-    	return consistentBinSearch(arr, x, myStack, 0, arr.length, arr.length % 2);
-    }
-
-    public static int consistentBinSearch(int[] arr, int x, Stack myStack, int min, int max, int odd){
-        int inconsistencies = Consistency.isConsistent(arr);
-        int index = (max + min) /2;
-        myStack.push(arr[index]);
-        while (inconsistencies > 0 && !myStack.isEmpty()){
-            int temp =(int) myStack.pop();
-            if (temp < arr[index])
-                min = max - 2 * min + odd;
-            else
-                max = 2 * max - min + odd;
-            inconsistencies = inconsistencies - 1;
-        }
-        index = (min + max) / 2;
-        if (min + 1 >= max && inconsistencies == 0){
-            if (arr[index] == x)
+        int max = arr.length;
+        int min = 0;
+        while(max -1 <= min){       //never going to reach the max
+            int index = (max + min) /2;
+            if(arr[index] == x)
                 return index;
-            return -1;
+            int inconsistencies = Consistency.isConsistent(arr);
+            while (inconsistencies > 0 & !myStack.isEmpty()){
+                int backTrack = (int) myStack.pop();                    // need to avoid using a pop without checking if not empty
+                if (backTrack > index)
+                    max = backTrack;
+                else
+                    min = backTrack;
+                inconsistencies = Consistency.isConsistent(arr);        //the incorrect step may have been taken
+            }
+            if(arr[index] > x){         //remember where you came from
+                myStack.push(max);
+                max = (max - min)/2;
+            }
+            else {
+                myStack.push(min);
+                min = (max - min) / 2 + 1;
+            }
         }
-        if (arr[index] < x)
-            return consistentBinSearch(arr, x,myStack ,index + 1 ,max,(max+min) % 2);
-        return consistentBinSearch(arr, x,myStack ,min ,index,(max+min) % 2);
+        if (arr[min] == x)          //maybe the key was in the last iteration
+            return min;
+        return -1;                  //key was not found
     }
-    
 }
