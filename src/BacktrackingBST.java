@@ -21,12 +21,39 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     }
 	
     public Node search(int k) {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if (root == null)
+            return null;
+        BacktrackingBST.Node current = root;
+        while(current.key != k){
+            if(current.left != null && current.key > k)
+                current = current.left;
+            else if (current.right != null)
+                current = current.right;
+            else
+                return null;
+        }
+        return current;
     }
 
     public void insert(Node node) {
-        // TODO: implement your code here
+        if (node == null)
+            throw new IllegalArgumentException("node is null");
+        boolean locationFound = false;
+        BacktrackingBST.Node current = root;
+        while (!locationFound){
+            if (node.key > current.key)
+                if (current.right == null)
+                    current.right = node;
+                else
+                    current = current.left;
+            else
+                if (current.left == null)
+                    current.left = node;
+                else
+                    current = current.left;
+        }
+        stack.push(node);
+        stack.push(1);
     }
 
     public void delete(Node node) {
