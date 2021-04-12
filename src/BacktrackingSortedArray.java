@@ -133,6 +133,11 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
     @Override
     public void print() {
         // TODO: implement your code here
+        String str = "";
+        str = str + Integer.toString(arr[0]);
+        for (int i=1; i<inserted; i++){
+            str = str + " " + Integer.toString(arr[i]);
+        }
     }
     
 }
