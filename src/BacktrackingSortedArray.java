@@ -42,29 +42,49 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
         // TODO: implement your code here
         if ( inserted >= arr.length )
             throw new IllegalArgumentException("The array is full!");
-        int index = 0;
-        while ( index < inserted ){
-            int key = arr[index];
-            if ( x < key ) {
-                arr[index] = x;
-                stack.push(index);
-                stack.push(x);
-                while ( index < inserted ) {
-                    int temp = arr[index+1];
-                    arr[index+1] = temp;
-                    index = index + 1;
-                }
-            }
-            else
-                index = index + 1;
+        int min = 0;
+        int max = inserted;
+        int index = (min + max) / 2;
+        if ( min == max ){
+            arr[index] = x;
         }
+        else if ( x < minimum() ){
+            for (int i=inserted-1; i>=0; i--){
+                arr[i+1] = arr[i];
+            }
+            index = min;
+            arr[min] = x;
+        }
+        else if ( x > maximum() ) {
+            index = max;
+            arr[max] = x;
+        }
+        else{
+            while ( min <= max ){
+                index = (min + max) / 2;
+                if ( x > arr[index] && x < arr[index+1] ) {
+                    for (int i=inserted-1; i>=index; i++){
+                        arr[i+1] = arr[i];
+                    }
+                    arr[index] = x;
+                }
+                else if ( x < arr[index] )
+                    max = index - 1;
+                else
+                    min = index + 1;
+            }
+        }
+        stack.push(index);
+        stack.push(x);
         inserted = inserted + 1;
     }
 
     @Override
     public void delete(Integer index) {
         // TODO: implement your code here
-        stack.push(index + arr.length);
+        if ( index < 0 || index >= inserted )
+            throw new IllegalArgumentException("Index out of bounds");
+        stack.push(-1);
         stack.push(arr[index]);
         for (int i=index; i<inserted-1; i++){
             arr[i] = arr[i+1];
@@ -114,13 +134,12 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
         if ( stack.isEmpty() )
             throw new IllegalArgumentException("There's no backtrack yet");
         int value = (int) stack.pop();
-        int index = (int) stack.pop();
-        if ( index >= arr.length ){
-            index = index - arr.length;
+        int sign = (int) stack.pop();
+        if ( sign < 0 ){
             insert(value);
         }
         else
-            delete(index);
+            delete(sign);
     }
 
     @Override
@@ -138,6 +157,7 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
         for (int i=1; i<inserted; i++){
             str = str + " " + Integer.toString(arr[i]);
         }
+        System.out.println(str);
     }
     
 }
