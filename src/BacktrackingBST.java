@@ -105,28 +105,33 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
 
         else{
             BacktrackingBST.Node suc = successor(node);
-            System.out.println(suc.getKey());
             deleteThisNode(suc);
+            System.out.println(node.left +"  " +node.right);
             //backtracking
             replaceNode(node, suc);
         }
     }
 
-    private void replaceNode(Node old, Node replace){
+    private void replaceNode(Node old, Node replacement){
         if (old.parent == null) {
-            root = replace;
-            replace.parent = null;
+            root = replacement;
+            replacement.parent = null;
         }
         else if (old.parent.left != null && old.parent.left.key == old.key) {
-            old.parent.left = replace;
-            replace.parent = old.parent;
-            System.out.println("here");
+            old.parent.left = replacement;
+            replacement.parent = old.parent;
         }
         else {
-            old.parent.right = replace;
-            System.out.println(old.parent.key);
-            replace.parent = old.parent;
-            System.out.println("no im here");
+            old.parent.right = replacement;
+            replacement.parent = old.parent;
+        }
+        if(old.left != null && old.right != null){
+            BacktrackingBST.Node current = replacement;
+            while(current.right != null)
+                current = current.right;
+            current.right = old.right;
+            replacement.left = old.left;
+            System.out.println("here");
         }
     }
 
@@ -195,6 +200,10 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
 
     public void printPreOrder(){
         // TODO: implement your code here
+        if ( root == null )
+            System.out.println("");
+        else
+            System.out.println(root.toString());
     }
 
     @Override
@@ -223,7 +232,19 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         public Object getValue() {
             return value;
         }
-        
+
+        public String toString(){
+            String str = Integer.toString(key);
+            if ( left == null && right == null )
+                return str;
+            else {
+                if ( left != null )
+                    str = str + " " + left.toString();
+                if ( right != null )
+                    str = str + " " + right.toString();
+            }
+            return str;
+        }
     }
 
 }
