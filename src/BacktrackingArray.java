@@ -14,13 +14,11 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer get(int index){
-        // TODO: implement your code here
     	return arr[index]; // temporal return command to prevent compilation error
     }
 
     @Override
     public Integer search(int k) {
-        // TODO: implement your code here
         for (int i=0; i<inserted; i++){
             if (arr[i] == k)
                 return i;
