@@ -45,13 +45,15 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 if (current.right == null) {
                     current.right = node;
                     locationFound = true;
+                    node.parent = current;
                 }
                 else
-                    current = current.left;
+                    current = current.right;
             else
                 if (current.left == null){
                     locationFound = true;
                     current.left = node;
+                    node.parent = current;
                 }
                 else
                     current = current.left;
@@ -83,14 +85,42 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         }
     }
 
-    public void deleteThisNode(Node node){
+    private void deleteThisNode(Node node){
         BacktrackingBST.Node parent = node.parent;
         if (node.right == null && node.left == null){
-            if(parent.left.key == node.key)
-                parent.left
+            if (parent == null)
+                root = null;
+            else if(parent.left.key == node.key)
+                parent.left = null;
+            else
+                parent.right = null;
         }
+        else if (node.right == null)
+            replaceNode(node, node.left);
+        else if (node.left == null)
+            replaceNode(node, node.right);
 
+        else{
+            BacktrackingBST.Node suc = successor(node);
+            delete(suc);
+            //backtracking
+            replaceNode(node, suc);
+        }
+    }
 
+    private void replaceNode(Node old, Node replace){
+        if (old.parent == null) {
+            root = replace;
+            replace.parent = null;
+        }
+        else if (old.parent.left.key == old.key) {
+            old.parent.left = replace;
+            replace.parent = old.parent;
+        }
+        else {
+            old.parent.right = replace;
+            replace.parent = old.parent;
+        }
     }
 
     public Node minimum() {
