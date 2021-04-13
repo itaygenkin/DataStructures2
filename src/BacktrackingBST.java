@@ -42,22 +42,55 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         BacktrackingBST.Node current = root;
         while (!locationFound){
             if (node.key > current.key)
-                if (current.right == null)
+                if (current.right == null) {
                     current.right = node;
+                    locationFound = true;
+                }
                 else
                     current = current.left;
             else
-                if (current.left == null)
+                if (current.left == null){
+                    locationFound = true;
                     current.left = node;
+                }
                 else
                     current = current.left;
         }
         stack.push(node);
-        stack.push(1);
+        stack.push(-1);
     }
 
     public void delete(Node node) {
-        // TODO: implement your code here
+        if(node == null)
+            throw new IllegalArgumentException("node is null");
+        int depth = 0;
+        boolean nodeFound = false;
+        BacktrackingBST.Node current = root;
+        while (!nodeFound && root != null){
+            if (current.key == node.key){
+                deleteThisNode(node);
+                nodeFound = true;
+                stack.push(node);
+                stack.push(depth);
+            }
+            depth = depth + 1;
+            if (current.key > node.key && current.left != null)
+                current = current.left;
+            else if (current.key < node.key && current.right != null)
+                current = current.left;
+            else
+                nodeFound = true;
+        }
+    }
+
+    public void deleteThisNode(Node node){
+        BacktrackingBST.Node parent = node.parent;
+        if (node.right == null && node.left == null){
+            if(parent.left.key == node.key)
+                parent.left
+        }
+
+
     }
 
     public Node minimum() {
