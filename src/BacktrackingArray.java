@@ -136,11 +136,11 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
     public void print() {
         // TODO: implement your code here
         String str = "";
-        for (int i=0; i<inserted; i++){
-                str = str + Integer.toString(arr[i]) + " ";
+        if ( inserted > 0 )
+            str = str + Integer.toString(arr[0]);
+        for (int i=1; i<inserted; i++){
+                str = str + " " + Integer.toString(arr[i]);
         }
-        if (inserted > 0)
-            str = str.substring(0, str.length() - 1);
         System.out.println(str);
     }
     

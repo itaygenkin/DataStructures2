@@ -14,7 +14,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
     
     @Override
     public Integer get(int index){
-        // TODO: implement your code here
         if ( index >= inserted || index < 0 )
             throw new IllegalArgumentException("Invalid index");
     	return arr[index]; // temporal return command to prevent compilation error
@@ -39,7 +38,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public void insert(Integer x) {
-        // TODO: implement your code here
         if ( inserted >= arr.length )
             throw new IllegalArgumentException("The array is full!");
         int min = 0;
@@ -63,10 +61,10 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
             while ( min <= max ){
                 index = (min + max) / 2;
                 if ( x > arr[index] && x < arr[index+1] ) {
-                    for (int i=inserted-1; i>=index; i++){
+                    for (int i=inserted-1; i>index; i--){
                         arr[i+1] = arr[i];
                     }
-                    arr[index] = x;
+                    arr[index+1] = x;
                 }
                 else if ( x < arr[index] )
                     max = index - 1;
@@ -81,7 +79,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public void delete(Integer index) {
-        // TODO: implement your code here
         if ( index < 0 || index >= inserted )
             throw new IllegalArgumentException("Index out of bounds");
         stack.push(-1);
@@ -94,7 +91,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer minimum() {
-        // TODO: implement your code here
         if ( inserted > 0 )
             return arr[0];
         else
@@ -103,7 +99,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer maximum() {
-        // TODO: implement your code here
         if (inserted > 0)
     	    return arr[inserted-1];
         else
@@ -112,7 +107,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer successor(Integer index) {
-        // TODO: implement your code here
         if ( index < 0 || index >= inserted - 1 )
             throw new IllegalArgumentException("Index out of bounds");
         else
@@ -121,7 +115,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer predecessor(Integer index) {
-        // TODO: implement your code here
         if ( index < 1 || index >= inserted )
             throw new IllegalArgumentException("Index out of bounds");
         else
@@ -130,7 +123,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public void backtrack() {
-        // TODO: implement your code here
         if ( stack.isEmpty() )
             throw new IllegalArgumentException("There's no backtrack yet");
         int value = (int) stack.pop();
@@ -151,7 +143,6 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public void print() {
-        // TODO: implement your code here
         String str = "";
         str = str + Integer.toString(arr[0]);
         for (int i=1; i<inserted; i++){
