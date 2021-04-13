@@ -38,25 +38,28 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     public void insert(Node node) {
         if (node == null)
             throw new IllegalArgumentException("node is null");
-        boolean locationFound = false;
-        BacktrackingBST.Node current = root;
-        while (!locationFound){
-            if (node.key > current.key)
-                if (current.right == null) {
-                    current.right = node;
-                    locationFound = true;
-                    node.parent = current;
-                }
-                else
-                    current = current.right;
-            else
-                if (current.left == null){
+        if (root == null)
+            root = node;
+        else {
+            boolean locationFound = false;
+            BacktrackingBST.Node current = root;
+            while (!locationFound) {
+                if (node.key > current.key)
+                    if (current.right == null) {
+                        current.right = node;
+                        locationFound = true;
+                        node.parent = current;
+                    }
+                    else
+                        current = current.right;
+                else if (current.left == null) {
                     locationFound = true;
                     current.left = node;
                     node.parent = current;
                 }
                 else
                     current = current.left;
+            }
         }
         stack.push(node);
         stack.push(-1);
@@ -79,7 +82,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             if (current.key > node.key && current.left != null)
                 current = current.left;
             else if (current.key < node.key && current.right != null)
-                current = current.left;
+                current = current.right;
             else
                 nodeFound = true;
         }
@@ -102,7 +105,8 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
 
         else{
             BacktrackingBST.Node suc = successor(node);
-            delete(suc);
+            System.out.println(suc.getKey());
+            deleteThisNode(suc);
             //backtracking
             replaceNode(node, suc);
         }
@@ -113,13 +117,16 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             root = replace;
             replace.parent = null;
         }
-        else if (old.parent.left.key == old.key) {
+        else if (old.parent.left != null && old.parent.left.key == old.key) {
             old.parent.left = replace;
             replace.parent = old.parent;
+            System.out.println("here");
         }
         else {
             old.parent.right = replace;
+            System.out.println(old.parent.key);
             replace.parent = old.parent;
+            System.out.println("no im here");
         }
     }
 
@@ -142,21 +149,40 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         }
         return current;
     }
-    /*
+
     public Node successor(Node node) {
-        if ( root == null || node.key == this.maximum() || search(node) == null )
-            throw new IllegalArgumentException("node doesn't exist or is already the maximum")
-        BacktrackingBST.Node suc = node;
-        if ( suc.right != null )
-            return suc.right.minimum();
+        if ( root == null || node.key == this.maximum().key || search(node.key) == null )
+            throw new IllegalArgumentException("node doesn't exist or is already the maximum");
+        BacktrackingBST.Node current = this.search(node.getKey());
+        if ( current.right != null ) {
+            current = current.right;
+            while (current.left != null)
+                current = current.left;
+            return current;
+        }
+        while ( current.parent != null && current.parent.left.key != current.key ){
+            current = current.parent;
+        }
+        return current.parent;
     }
 
     public Node predecessor(Node node) {
-        if(root == null || node.key == this.maximum().key || this.search(node.key) == null)
+        if(root == null || node.key == this.minimum().key || this.search(node.key) == null)
             throw new IllegalArgumentException("node doesn't exist or is already the minimum");
-
+        BacktrackingBST.Node current = this.search(node.key);
+        if (current.left != null) {
+            current = current.left;
+            while (current.right != null)
+                current = current.right;
+        }
+        else {
+            current = current.parent;
+            while (current.parent != null && current.parent.key < current.key)
+                current = current.parent;
+        }
+        return current;
     }
-        */
+
     @Override
     public void backtrack() {
         // TODO: implement your code here
