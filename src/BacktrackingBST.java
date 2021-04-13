@@ -124,25 +124,39 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     }
 
     public Node minimum() {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if (root == null)
+            throw new IllegalArgumentException("empty tree");
+        BacktrackingBST.Node current = root;
+        while(current.left != null){
+            current = current.left;
+        }
+        return current;
     }
 
     public Node maximum() {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if ( root == null )
+            throw new IllegalArgumentException("empty tree");
+        BacktrackingBST.Node current = root;
+        while ( current.right != null ){
+            current = current.right;
+        }
+        return current;
     }
-
+    /*
     public Node successor(Node node) {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
+        if ( root == null || node.key == this.maximum() || search(node) == null )
+            throw new IllegalArgumentException("node doesn't exist or is already the maximum")
+        BacktrackingBST.Node suc = node;
+        if ( suc.right != null )
+            return suc.right.minimum();
     }
 
     public Node predecessor(Node node) {
-        // TODO: implement your code here
-    	return null; // temporal return command to prevent compilation error
-    }
+        if(root == null || node.key == this.maximum().key || this.search(node.key) == null)
+            throw new IllegalArgumentException("node doesn't exist or is already the minimum");
 
+    }
+        */
     @Override
     public void backtrack() {
         // TODO: implement your code here
