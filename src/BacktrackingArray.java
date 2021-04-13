@@ -45,7 +45,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
         if (index >= arr.length)
             throw new IllegalArgumentException("Index out of bounds");
         stack.push(arr[index]);
-        stack.push(index * (-1) - 1);
+        stack.push(index + arr.length);
         for (int i=index; i<inserted-1; i++){
             arr[i] = arr[i+1];
         }
@@ -112,10 +112,10 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
         if ( !stack.isEmpty() ){
             int index = (int) stack.pop();
             int value = (int) stack.pop();
-            if ( index > 0 )
+            if ( index < arr.length )
                 delete(index-1);
             else{
-                index = (index + 1) * (-1);
+                index = index - arr.length;
                 for (int i=inserted; i>index; i--){
                     arr[i+1] = arr[i];
                 }
