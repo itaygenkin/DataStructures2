@@ -32,7 +32,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
         if (inserted >= arr.length)
             throw new IllegalArgumentException("The array is full!");
         stack.push(x);
-        stack.push(inserted + 1);
+        stack.push(inserted+1);
         arr[inserted] = x;
         inserted = inserted + 1;
     }
@@ -47,15 +47,15 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
         for (int i=index; i<inserted-1; i++){
             arr[i] = arr[i+1];
         }
+        arr[inserted] = 0;
         inserted = inserted - 1;
+
     }
 
     @Override
     public Integer minimum() {
-        // TODO: implement your code here
-        if (inserted == 0){
+        if (inserted == 0)
             throw new IllegalArgumentException("There is no value");
-        }
         int min = 0;
         for (int i=1; i<inserted; i++){
             if ( arr[min] > arr[i] )
@@ -66,10 +66,8 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer maximum() {
-        // TODO: implement your code here
-        if (inserted == 0){
+        if (inserted == 0)
             throw new IllegalArgumentException("There is no value");
-        }
         int max = 0;
         for (int i=1; i<inserted; i++){
             if ( arr[max] < arr[i] )
@@ -80,7 +78,6 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer successor(Integer index) {
-        // TODO: implement your code here
         if (inserted < index || index < 0 || inserted < 2 || this.maximum() == arr[index])
             throw new IllegalArgumentException("Wrong input");
         int output = maximum();
@@ -88,12 +85,11 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             if (arr[index] < arr[i] && arr[i] < arr[output])
                 output = i;
         }
-    	return output; // temporal return command to prevent compilation error
+    	return output;
     }
 
     @Override
     public Integer predecessor(Integer index) {
-        // TODO: implement your code here
         if (inserted < index || index < 0 || inserted < 2 || this.minimum() == arr[index])
             throw new IllegalArgumentException("Wrong input");
         int output = minimum();
@@ -101,7 +97,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             if (arr[index] > arr[i] && arr[i] > arr[output])
                 output = i;
         }
-    	return output; // temporal return command to prevent compilation error
+    	return output;
     }
 
     @Override
@@ -114,7 +110,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
                 delete(index-1);
             else{
                 index = index - arr.length;
-                for (int i=inserted; i>index; i--){
+                for (int i=inserted; i>=index; i--){
                     arr[i+1] = arr[i];
                 }
                 arr[index] = value;
