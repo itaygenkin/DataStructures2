@@ -97,7 +97,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 node.left.parent = node.parent;
             }
         }
-        else if ( node.left == null ){ //?root? so node has one RIGHT child
+        else if ( node.right != null && node.left == null ){ //?root? so node has one RIGHT child
             stack.push(12);
             if ( node.key == root.key ){
                 root = root.right;
@@ -115,66 +115,26 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         else{
             replaceNode(node);
         }
-/*        else{ // node has two children
-            if ( node.key == root.key ){
-                BacktrackingBST.Node baby = node.left; // baby is gonna replace the root
-                while ( baby.right != null )
-                    baby = baby.right;
-                if ( baby.left != null ) {
-                    baby.parent.right = baby.left;
-                    baby.left.parent = baby.parent;
-                }
-                BacktrackingBST.Node tempLeft = root.left;
-                BacktrackingBST.Node tempRight = root.right;
-                root = baby;
-                root.left = tempLeft;
-                root.right = tempRight;
-            }
-            else{ // when node isn't the root and has two children
-                BacktrackingBST.Node baby = node.left; //baby is gonna change the node
-                while ( baby.right != null )
-                    baby = baby.right; // then, baby doesn't have right child
-//                BacktrackingBST.Node temp = baby;
-//                if ( baby.left != null )
-//                    baby.right = baby.parent.right;
-//                    baby.parent.right = temp.right;
-                if ( node.parent.left.key == node.key ) // node is left child
-                    node.parent.left = baby;
-                else                            // node is right child
-                    node.parent.right = baby;
-                baby.right = node.right;
-            }
-        }*/
+
     }
 
     private void replaceNode (Node node){ //we assume node has at least one child
         if ( node.left == null ){ // so node has one RIGHT child
             BacktrackingBST.Node replace = node.right;
-            while ( replace.left != null )
-                replace = replace.left;
-            replace.parent.left = replace.right;
-            replace.right.parent = replace.parent;
-            BacktrackingBST.Node temp = node.right;
-            node = replace;
-            node.right = temp;
+            replace.setParent(node.parent);
         }
-        else { // so node has LEFT child
+        else if ( node.right == null ){  // so node has LEFT child
+            BacktrackingBST.Node replace = node.left;
+            replace.setParent(node.parent);
+        }
+        else{ // so node has two children
             BacktrackingBST.Node replace = node.left;
             while ( replace.right != null )
                 replace = replace.right;
-            if ( replace.left != null ){
-                replace.parent.right = replace.left;
-                replace.left.parent = replace.parent;
-                BacktrackingBST.Node temp = node.left;
-                node = replace;
-                node.left = temp;
-            }
-            else{
-                BacktrackingBST.Node temp = node.left;
-                replace.parent.right = null;
-                node = replace;
-                node.left = temp;
-            }
+            delete(replace);
+            replace.setLeft(node);
+            replace.setRight(node);
+            replace.setParent(node);
         }
     }
 
@@ -287,8 +247,28 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             }
             return str;
         }
+
+        public void setLeft(Node newNode){
+            this.left = newNode;
+            newNode.parent = this;
+        }
+
+        public void setRight(Node newNode){
+            this.right = newNode;
+            newNode.parent = this;
+        }
+
+        public void setParent(Node baby){
+            if ( this.parent != null ){
+                if ( this.parent.right == baby )
+                    this.parent.right = baby;
+                else
+                    this.parent.left = baby;
+                baby.parent = this;
+            }
+            else
+                this.parent = null;
+        }
     }
 
 }
-
-
