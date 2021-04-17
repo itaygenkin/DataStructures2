@@ -68,54 +68,22 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         // TODO: implement your code here
         if ( node == null )
             throw new IllegalArgumentException("node is null");
-        stack.push(node);
-        if ( node.left == null && node.right == null ){ // so node is a LEAF
-            stack.push(0);
-            if ( node.key == root.key )
-                root = null;
-            else if ( node.parent.left != null && node.parent.left.key == node.key ) { // so node is a LEFT child
-                node.parent.left = null;
-                node = null;
+        if ( search(node.key) != null ){
+            stack.push(node);
+            if ( node.left == null && node.right == null ){ // so node is a LEAF
+                stack.push(0);
+                if ( node.key == root.key ) // so node is the root
+                    root = null;
+                else if ( node.parent.left != null && node.parent.left == node )  // so node is a LEFT child
+                    node.parent.left = null;
+                else {                                 // so node is a RIGHT child
+                    node.parent.right = null;
+                    node = null;
+                }
             }
-            else {                                 // so node is a RIGHT child
-                node.parent.right = null;
-                node = null;
-            }
+            else
+                replaceNode(node);
         }
-        else if ( node.right == null ){          // so node has one LEFT child
-            stack.push(11);
-            if ( node == root ) {
-                root = root.left;
-                root.left = null;
-            }
-            else if ( node.parent.left != null && node.parent.left.key == node.key ) { //?? so node is a LEFT child with one LEFT child
-                node.parent.left = node.left;
-                node.left.parent = node.parent;
-            }
-            else {                                 // node is a RIGHT child with one LEFT child
-                node.parent.right = node.left;
-                node.left.parent = node.parent;
-            }
-        }
-        else if ( node.right != null && node.left == null ){ //?root? so node has one RIGHT child
-            stack.push(12);
-            if ( node.key == root.key ){
-                root = root.right;
-                root.right = null;
-            }
-            else if ( node.parent.right.key == node.key ) { // so node is a RIGHT child with one RIGHT child
-                node.parent.right = node.right;
-                node.right.parent = node.parent;
-            }
-            else {                                  // node is a LEFT child with one RIGHT child
-                node.parent.right = node.left;
-                node.right.parent = node.parent;
-            }
-        }
-        else{
-            replaceNode(node);
-        }
-
     }
 
     private void replaceNode (Node node){ //we assume node has at least one child
@@ -272,3 +240,36 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     }
 
 }
+
+/*
+else if ( node.right == null ){          // so node has one LEFT child
+            stack.push(11);
+            if ( node == root ) {
+                root = root.left;
+                root.left = null;
+            }
+            else if ( node.parent.left != null && node.parent.left.key == node.key ) { //?? so node is a LEFT child with one LEFT child
+                node.parent.left = node.left;
+                node.left.parent = node.parent;
+            }
+            else {                                 // node is a RIGHT child with one LEFT child
+                node.parent.right = node.left;
+                node.left.parent = node.parent;
+            }
+        }
+        else if ( node.right != null && node.left == null ){ //?root? so node has one RIGHT child
+            stack.push(12);
+            if ( node.key == root.key ){
+                root = root.right;
+                root.right = null;
+            }
+            else if ( node.parent.right.key == node.key ) { // so node is a RIGHT child with one RIGHT child
+                node.parent.right = node.right;
+                node.right.parent = node.parent;
+            }
+            else {                                  // node is a LEFT child with one RIGHT child
+                node.parent.right = node.left;
+                node.right.parent = node.parent;
+            }
+        }
+ */
