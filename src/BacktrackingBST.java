@@ -112,7 +112,10 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 node.right.parent = node.parent;
             }
         }
-        else{ // node has two children
+        else{
+            replaceNode(node);
+        }
+/*        else{ // node has two children
             if ( node.key == root.key ){
                 BacktrackingBST.Node baby = node.left; // baby is gonna replace the root
                 while ( baby.right != null )
@@ -141,29 +144,37 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                     node.parent.right = baby;
                 baby.right = node.right;
             }
-        }
+        }*/
     }
 
-    private void replaceNode (){ //we assume root has at least one child
-        if ( root.left == null ){ // so root has one RIGHT child
-            BacktrackingBST.Node replace = root.right;
+    private void replaceNode (Node node){ //we assume node has at least one child
+        if ( node.left == null ){ // so node has one RIGHT child
+            BacktrackingBST.Node replace = node.right;
             while ( replace.left != null )
                 replace = replace.left;
             replace.parent.left = replace.right;
             replace.right.parent = replace.parent;
-            BacktrackingBST.Node temp = root.right;
-            root = replace;
-            root.right = temp;
+            BacktrackingBST.Node temp = node.right;
+            node = replace;
+            node.right = temp;
         }
-        else { // so root has LEFT child
-            BacktrackingBST.Node replace = root.left;
+        else { // so node has LEFT child
+            BacktrackingBST.Node replace = node.left;
             while ( replace.right != null )
                 replace = replace.right;
-            replace.parent.right = replace.left;
-            replace.left.parent = replace.parent;
-            BacktrackingBST.Node temp = root.left;
-            root = replace;
-            root.left = temp;
+            if ( replace.left != null ){
+                replace.parent.right = replace.left;
+                replace.left.parent = replace.parent;
+                BacktrackingBST.Node temp = node.left;
+                node = replace;
+                node.left = temp;
+            }
+            else{
+                BacktrackingBST.Node temp = node.left;
+                replace.parent.right = null;
+                node = replace;
+                node.left = temp;
+            }
         }
     }
 
