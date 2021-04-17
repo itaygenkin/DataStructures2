@@ -57,7 +57,6 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     public void insert(Node node) {
         if (node == null)
             throw new IllegalArgumentException("node is null");
-        int depth = 0;
         if (root == null)
             root = node;
         else {
@@ -69,21 +68,17 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                         current.setRight(node);
                         locationFound = true;
                     }
-                    else {
+                    else
                         current = current.right;
-                        depth = depth +1;
-                    }
                 else if (current.left == null) {
                     locationFound = true;
                     current.setLeft(node);
                 }
-                else {
+                else
                     current = current.left;
-                    depth = depth +1;
-                }
             }
         }
-        Object[] memoArray = {node, depth};                     //will be used in backtracking
+        Object[] memoArray = {node};                     //will be used in backtracking
         stack.push(memoArray);
     }
 
@@ -102,11 +97,13 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 stack.push(memoArray);
             }
             else
-                replaceNode(node,depth);
+                replaceNode(node);
         }
     }
 
-    private void replaceNode (Node node, int depth){ //we assume node has at least one child
+    private void replaceNode (Node node){ //we assume node has at least one child
+        Node parentMemo = null;
+        Node leftChildMemo = null;
         boolean deleted2 = false;
         Node replace = node.right;
         if (node.right == null)         //if it only has child in left
@@ -117,13 +114,16 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             while ( replace.right != null) {
                 replace = replace.right;
             }
+            parentMemo = replace.parent;
+            leftChildMemo = replace.left;
             delete(replace);                //making sure we keep the predecessor children
+            stack.pop();
             replace.setLeft(node.left);
             replace.setRight(node.right);
         }
         if(replace.setParent(node))         //this will happen if the root hase been changed
             root = replace;
-        Object[] memoArray = {node, depth, deleted2};       //will be used in backtracking
+        Object[] memoArray = {node, deleted2, replace, parentMemo, leftChildMemo}; //will be used in backtracking
         stack.push(memoArray);
     }
 
@@ -181,9 +181,47 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     }
 
     @Override
-    public void backtrack() {
+    public void backtrack() {       //we will assume here that the stack wasn't changed
         // TODO: implement your code here
+        if (!stack.isEmpty()){
+            Object[] arr1 = (Object[]) stack.pop();
+            if(arr1.length == 1) {                      //then we need to backtrack from an insert
+                delete((Node) arr1[0]);
+                redoStack.push(stack.pop());
+            }
+            else {
+                if (! ((boolean) arr1[1]))                //then we need to backtrack from a delete of 1
+                    backtrackFromDelete((Node) arr1[0]);
+                else {                                      //we are backtracking from a delete of 2
+                    backtrackFrom2Deletes((Node) arr1[0], (Node) arr1[2], (Node) arr1[3], (Node) arr1[4]);
+                }
+            }
+        }
+    }
 
+    public void backtrackFromDelete(Node node){
+        if(node.left != null) {
+            if(node.setParent(node.left))
+                root = node;
+            node.setLeft(node.left);
+        }
+        if(node.right !=null) {
+            if(node.setParent(node.right))
+                root = node;
+            node.setRight(node.right);
+        }
+        Object [] memoArray = {node};
+        redoStack.push(memoArray);
+    }
+
+    public void backtrackFrom2Deletes(Node firstDelete, Node secondDelete, Node memoParent, Node memoLeftChild){
+        // TODO: implement your code here
+        if(firstDelete.setParent(secondDelete))
+            root = firstDelete;
+        firstDelete.setRight(firstDelete.right);
+        firstDelete.setLeft(firstDelete.left);
+        secondDelete.setParent(memoParent);
+        secondDelete.setLeft(memoLeftChild);
     }
 
     @Override
