@@ -78,7 +78,6 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                     node.parent.left = null;
                 else {                                 // so node is a RIGHT child
                     node.parent.right = null;
-                    node = null;
                 }
             }
             else
@@ -89,11 +88,11 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     private void replaceNode (Node node){ //we assume node has at least one child
         if ( node.left == null ){ // so node has one RIGHT child
             BacktrackingBST.Node replace = node.right;
-            replace.setParent(node.parent);
+            replace.setParent(node);
         }
         else if ( node.right == null ){  // so node has LEFT child
             BacktrackingBST.Node replace = node.left;
-            replace.setParent(node.parent);
+            replace.setParent(node);
         }
         else{ // so node has two children
             BacktrackingBST.Node replace = node.left;
@@ -226,13 +225,13 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             newNode.parent = this;
         }
 
-        public void setParent(Node baby){
-            if ( this.parent != null ){
-                if ( this.parent.right == baby )
-                    this.parent.right = baby;
+        public void setParent(Node oldNode){
+            if ( oldNode.parent != null ){
+                if ( oldNode.parent.right == oldNode )
+                    oldNode.parent.right = this;
                 else
-                    this.parent.left = baby;
-                baby.parent = this;
+                    oldNode.parent.left = this;
+                this.parent = oldNode.parent;
             }
             else
                 this.parent = null;
