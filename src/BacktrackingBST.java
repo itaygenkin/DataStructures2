@@ -93,26 +93,25 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         if (node.right == null && node.left == null){
             if (parent == null)
                 root = null;
-            else if(parent.left.key == node.key)
+            else if(parent.left == node)
                 parent.left = null;
             else
                 parent.right = null;
         }
         else if (node.right == null)
-            replaceNode(node, node.left);
+            replaceNode(node, node.left,false);
         else if (node.left == null)
-            replaceNode(node, node.right);
+            replaceNode(node, node.right,false);
 
         else{
             BacktrackingBST.Node suc = successor(node);
             deleteThisNode(suc);
-            System.out.println(node.left +"  " +node.right);
             //backtracking
-            replaceNode(node, suc);
+            replaceNode(node, suc, true);
         }
     }
 
-    private void replaceNode(Node old, Node replacement){
+    private void replaceNode(Node old, Node replacement, boolean needToRole){
         if (old.parent == null) {
             root = replacement;
             replacement.parent = null;
@@ -125,13 +124,13 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             old.parent.right = replacement;
             replacement.parent = old.parent;
         }
-        if(old.left != null && old.right != null){
+        if(needToRole){
             BacktrackingBST.Node current = replacement;
             while(current.right != null)
                 current = current.right;
-            current.right = old.right;
+            current.right = old.right.right;
+            current.parent = replacement;
             replacement.left = old.left;
-            System.out.println("here");
         }
     }
 
