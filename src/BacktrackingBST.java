@@ -215,18 +215,26 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     }
 
     public void backtrackFrom2Deletes(Node firstDelete, Node secondDelete, Node memoParent, Node memoLeftChild){
-        // TODO: implement your code here
         if(firstDelete.setParent(secondDelete))
             root = firstDelete;
         firstDelete.setRight(firstDelete.right);
         firstDelete.setLeft(firstDelete.left);
         secondDelete.setParent(memoParent);
         secondDelete.setLeft(memoLeftChild);
+        Object [] memoArray = {firstDelete};
+        redoStack.push(memoArray);
     }
 
     @Override
     public void retrack() {
-        // TODO: implement your code here
+        if (!redoStack.isEmpty()){
+            Object [] arr = (Object[]) redoStack.pop();
+            if(arr.length == 1){
+                delete((Node) arr[0]);
+            }
+            else
+                insert((Node) arr[0]);
+        }
     }
 
     public void printPreOrder(){
