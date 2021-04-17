@@ -34,9 +34,30 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         return current;
     }
 
+    public int searchDepth(Node node){
+        if (root == null)
+            return -1;
+        int depth = 0;
+        BacktrackingBST.Node current = root;
+        while(current.key != node.key){
+            if(current.left != null && current.key > node.key) {
+                current = current.left;
+                depth = depth +1;
+            }
+            else if (current.right != null) {
+                current = current.right;
+                depth = depth +1;
+            }
+            else
+                return -1;
+        }
+        return depth;
+    }
+
     public void insert(Node node) {
         if (node == null)
             throw new IllegalArgumentException("node is null");
+        int depth = 0;
         if (root == null)
             root = node;
         else {
@@ -45,56 +66,65 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             while (!locationFound) {
                 if (node.key > current.key)
                     if (current.right == null) {
-                        current.right = node;
+                        current.setRight(node);
                         locationFound = true;
-                        node.parent = current;
                     }
-                    else
+                    else {
                         current = current.right;
+                        depth = depth +1;
+                    }
                 else if (current.left == null) {
                     locationFound = true;
-                    current.left = node;
-                    node.parent = current;
+                    current.setLeft(node);
                 }
-                else
+                else {
                     current = current.left;
+                    depth = depth +1;
+                }
             }
         }
-        stack.push(node);
-        stack.push(-1);
+        Object[] memoArray = {node, depth};                     //will be used in backtracking
+        stack.push(memoArray);
     }
 
     public void delete(Node node) {
-        // TODO: implement your code here
         if ( node == null )
             throw new IllegalArgumentException("node is null");
-        if(search(node.key) != null) {
+        int depth = searchDepth(node);
+        if(depth != -1) {
             if (node.left == null && node.right == null) { // so node is a LEAF
                 if (node == root)
                     root = null;
                 else{
                     node.removeFromParent();
                 }
+                Object[] memoArray = {node, depth, false};      //will be used in backtracking
+                stack.push(memoArray);
             }
             else
-                replaceNode(node);
+                replaceNode(node,depth);
         }
     }
 
-    private void replaceNode (Node node){ //we assume node has at least one child
+    private void replaceNode (Node node, int depth){ //we assume node has at least one child
+        boolean deleted2 = false;
         Node replace = node.right;
         if (node.right == null)         //if it only has child in left
             replace = node.left;
         if (node.left != null && node.right != null){ // has 2 children
+            deleted2 = true;
             replace = node.left;
-            while ( replace.right != null )
+            while ( replace.right != null) {
                 replace = replace.right;
-            delete(replace);
+            }
+            delete(replace);                //making sure we keep the predecessor children
             replace.setLeft(node.left);
             replace.setRight(node.right);
         }
-        if(replace.setParent(node))         //this will happen if the root hase benn changed
+        if(replace.setParent(node))         //this will happen if the root hase been changed
             root = replace;
+        Object[] memoArray = {node, depth, deleted2};       //will be used in backtracking
+        stack.push(memoArray);
     }
 
     public Node minimum() {
@@ -153,6 +183,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     @Override
     public void backtrack() {
         // TODO: implement your code here
+
     }
 
     @Override
