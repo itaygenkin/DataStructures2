@@ -3,7 +3,6 @@
 public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
     private Stack stack;
     public int[] arr; // This field is public for grading purposes. By coding conventions and best practice it should be private.
-    // TODO: implement your code here
     private int inserted = 0;
 
     // Do not change the constructor's signature
@@ -16,12 +15,11 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
     public Integer get(int index){
         if ( index >= inserted || index < 0 )
             throw new IllegalArgumentException("Invalid index");
-    	return arr[index]; // temporal return command to prevent compilation error
+    	return arr[index];
     }
 
     @Override
     public Integer search(int k) {
-        // TODO: implement your code here
         int min = 0;
         int max = inserted - 1;
         while ( min <= max ){
@@ -33,7 +31,7 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
             else
                 min = mid + 1;
         }
-    	return -1; // temporal return command to prevent compilation error
+    	return -1;
     }
 
     @Override
@@ -94,7 +92,7 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
         if ( inserted > 0 )
             return arr[0];
         else
-    	    return null; // temporal return command to prevent compilation error
+    	    return null;
     }
 
     @Override
@@ -102,7 +100,7 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
         if (inserted > 0)
     	    return arr[inserted-1];
         else
-            return null; // temporal return command to prevent compilation error
+            return null;
     }
 
     @Override
@@ -110,7 +108,7 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
         if ( index < 0 || index >= inserted - 1 )
             throw new IllegalArgumentException("Index out of bounds");
         else
-    	    return arr[index+1]; // temporal return command to prevent compilation error
+    	    return arr[index+1];
     }
 
     @Override
@@ -118,7 +116,7 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
         if ( index < 1 || index >= inserted )
             throw new IllegalArgumentException("Index out of bounds");
         else
-            return arr[index-1]; // temporal return command to prevent compilation error
+            return arr[index-1];
     }
 
     @Override

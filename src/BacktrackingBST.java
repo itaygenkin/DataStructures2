@@ -19,6 +19,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         return root;
     }
 
+    //iteration serch as shown in class
     public Node search(int k) {
         if (root == null)
             return null;
@@ -34,26 +35,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         return current;
     }
 
-    public int searchDepth(Node node){
-        if (root == null)
-            return -1;
-        int depth = 0;
-        BacktrackingBST.Node current = root;
-        while(current.key != node.key){
-            if(current.left != null && current.key > node.key) {
-                current = current.left;
-                depth = depth +1;
-            }
-            else if (current.right != null) {
-                current = current.right;
-                depth = depth +1;
-            }
-            else
-                return -1;
-        }
-        return depth;
-    }
-
+    //iteration insert as shown in class
     public void insert(Node node) {
         if (node == null)
             throw new IllegalArgumentException("node is null");
@@ -65,14 +47,14 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             while (!locationFound) {
                 if (node.key > current.key)
                     if (current.right == null) {
-                        current.setRight(node);
+                        current.setRight(node);         //a helper function set at the nodes
                         locationFound = true;
                     }
                     else
                         current = current.right;
                 else if (current.left == null) {
                     locationFound = true;
-                    current.setLeft(node);
+                    current.setLeft(node);              //a helper function set at the nodes
                 }
                 else
                     current = current.left;
@@ -85,15 +67,14 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     public void delete(Node node) {
         if ( node == null )
             throw new IllegalArgumentException("node is null");
-        int depth = searchDepth(node);
-        if(depth != -1) {
+        if(search(node.key) != null) {
             if (node.left == null && node.right == null) { // so node is a LEAF
                 if (node == root)
                     root = null;
                 else{
                     node.removeFromParent();
                 }
-                Object[] memoArray = {node, depth, false};      //will be used in backtracking
+                Object[] memoArray = {node, false};      //will be used in backtracking
                 stack.push(memoArray);
             }
             else
@@ -101,6 +82,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         }
     }
 
+    //a helper function to make sure when a node is deleted that the tree is still a legal binary tree
     private void replaceNode (Node node){ //we assume node has at least one child
         Node parentMemo = null;
         Node leftChildMemo = null;
@@ -121,7 +103,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             replace.setLeft(node.left);
             replace.setRight(node.right);
         }
-        if(replace.setParent(node))         //this will happen if the root hase been changed
+        if(replace.setParent(node))         //root has been changed while setting the parent node
             root = replace;
         Object[] memoArray = {node, deleted2, replace, parentMemo, leftChildMemo}; //will be used in backtracking
         stack.push(memoArray);
@@ -132,7 +114,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             throw new IllegalArgumentException("empty tree");
         BacktrackingBST.Node current = root;
         while(current.left != null){
-            current = current.left;
+            current = current.left;         //maximum will always be the left child
         }
         return current;
     }
@@ -142,19 +124,20 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             throw new IllegalArgumentException("empty tree");
         BacktrackingBST.Node current = root;
         while ( current.right != null ){
-            current = current.right;
+            current = current.right;        //maximum will always be the right child
         }
         return current;
     }
 
     public Node successor(Node node) {
         if ( root == null || node.key == this.maximum().key || search(node.key) == null )
+            // if tree is empty or there is no successor or the node doesn't exist throw an error
             throw new IllegalArgumentException("node doesn't exist or is already the maximum");
         BacktrackingBST.Node current = this.search(node.getKey());
         if ( current.right != null ) {
             current = current.right;
             while (current.left != null)
-                current = current.left;
+                current = current.left;      // 1 right then all the way left
             return current;
         }
         while ( current.parent != null && current.parent.left.key != current.key ){
@@ -165,12 +148,13 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
 
     public Node predecessor(Node node) {
         if(root == null || node.key == this.minimum().key || this.search(node.key) == null)
+            // if tree is empty or there is no successor or the node doesn't exist throw an error
             throw new IllegalArgumentException("node doesn't exist or is already the minimum");
         BacktrackingBST.Node current = this.search(node.key);
         if (current.left != null) {
             current = current.left;
             while (current.right != null)
-                current = current.right;
+                current = current.right;        // 1 left then all the way right
         }
         else {
             current = current.parent;
@@ -182,31 +166,31 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
 
     @Override
     public void backtrack() {       //we will assume here that the stack wasn't changed
-        // TODO: implement your code here
         if (!stack.isEmpty()){
             Object[] arr1 = (Object[]) stack.pop();
-            if(arr1.length == 1) {                      //then we need to backtrack from an insert
+            if(arr1.length == 1) {                      //then we need to backtrack from an insert which will always be a leaf
                 delete((Node) arr1[0]);
-                redoStack.push(stack.pop());
+                redoStack.push(stack.pop());            //in delete we update the stack but we want to keep the value in the redoStack
             }
             else {
                 if (! ((boolean) arr1[1]))                //then we need to backtrack from a delete of 1
                     backtrackFromDelete((Node) arr1[0]);
-                else {                                      //we are backtracking from a delete of 2
+                else {                                      //we are backtracking from a delete and a node that was moved
                     backtrackFrom2Deletes((Node) arr1[0], (Node) arr1[2], (Node) arr1[3], (Node) arr1[4]);
                 }
             }
         }
     }
 
+    //helper function to backtrack from a single delete
     public void backtrackFromDelete(Node node){
         if(node.left != null) {
-            if(node.setParent(node.left))
+            if(node.setParent(node.left))       //root has been changed
                 root = node;
             node.setLeft(node.left);
         }
         if(node.right !=null) {
-            if(node.setParent(node.right))
+            if(node.setParent(node.right))      //root hase been changed
                 root = node;
             node.setRight(node.right);
         }
@@ -214,10 +198,11 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         redoStack.push(memoArray);
     }
 
+    //helper function to come back if we deleted 2 nodes
     public void backtrackFrom2Deletes(Node firstDelete, Node secondDelete, Node memoParent, Node memoLeftChild){
         if(firstDelete.setParent(secondDelete))
             root = firstDelete;
-        firstDelete.setRight(firstDelete.right);
+        firstDelete.setRight(firstDelete.right);        //since we keept all the node pointers we can come back from a delete by setting  all the pointers back
         firstDelete.setLeft(firstDelete.left);
         secondDelete.setParent(memoParent);
         secondDelete.setLeft(memoLeftChild);
@@ -230,10 +215,10 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         if (!redoStack.isEmpty()){
             Object [] arr = (Object[]) redoStack.pop();
             if(arr.length == 1){
-                delete((Node) arr[0]);
+                delete((Node) arr[0]);      // need to retrack from a insert
             }
             else
-                insert((Node) arr[0]);
+                insert((Node) arr[0]);      //need to retrack from a delete
         }
     }
 
@@ -263,18 +248,21 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             this.value = value;
         }
 
+        // a helper function that is used a lot to set the right child
         public void setRight(Node newNode){
             this.right = newNode;
             if (newNode != null)
                 newNode.parent = this;
         }
 
+        //same for left
         public void setLeft(Node newNode){
             this.left = newNode;
             if (newNode != null)
                 newNode.parent = this;
         }
 
+        // a function to set parent will return true if it changed the root
         public boolean setParent(Node oldNode){
             if(oldNode.parent != null) {
                 if (oldNode.parent.right == oldNode) {
@@ -289,6 +277,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             return true;
         }
 
+        //removes the node from the parent
         public void removeFromParent() {
             if (this.parent != null){
                 if (this.parent.right == this)
@@ -307,6 +296,7 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             return value;
         }
 
+        //recursion function to print the tree
         public String toString(){
             String str = Integer.toString(key);
             if ( left == null && right == null )

@@ -1,4 +1,3 @@
-//dvskflkds
 
 public class Warmup {
     public static int backtrackingSearch(int[] arr, int x, int forward, int back, Stack myStack) {
@@ -14,7 +13,7 @@ public class Warmup {
                 i = i - back;
             }
         }
-    	return -1; // temporal return command to prevent compilation error
+    	return -1;
     }
 
     public static int consistentBinSearch(int[] arr, int x, Stack myStack) {
@@ -27,7 +26,7 @@ public class Warmup {
     	        return index;
             }
     	    int inconsistencies = Consistency.isConsistent(arr);
-    	    while ( inconsistencies > 0 ){
+    	    while ( inconsistencies > 0  & !myStack.isEmpty()){
     	        int temp = (int) myStack.pop();
                 if ( temp > arr[index] ){
                     max = 2 * index - min + 1;
@@ -36,15 +35,13 @@ public class Warmup {
                     min = 2 * index - max - 1;
                 inconsistencies = inconsistencies - 1;
             }
-            if ( arr[index] > x )
+            if ( arr[index] < x )
                 min = index + 1;
             else
                 max = index - 1;
             myStack.push(arr[index]);
         }
-    	// Your implementation should contain a this line:
-//    	int inconsistencies = Consistency.isConsistent(arr);
-    	return -1; // temporal return command to prevent compilation error
+    	return -1;
     }
     
 }

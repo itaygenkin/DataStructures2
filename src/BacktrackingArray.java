@@ -3,7 +3,6 @@
 public class BacktrackingArray implements Array<Integer>, Backtrack {
     private Stack stack;
     private int[] arr;
-    // TODO: implement your code here
     private int inserted = 0;
 
     // Do not change the constructor's signature
@@ -28,28 +27,24 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public void insert(Integer x) { //What to do if arr is full?
-        // TODO: implement your code here
         if (inserted >= arr.length)
             throw new IllegalArgumentException("The array is full!");
         stack.push(x);
-        stack.push(inserted+1);
+        stack.push(-1);
         arr[inserted] = x;
         inserted = inserted + 1;
     }
 
     @Override
     public void delete(Integer index) {
-        // TODO: implement your code here
         if (index >= arr.length)
             throw new IllegalArgumentException("Index out of bounds");
         stack.push(arr[index]);
-        stack.push(index + arr.length);
+        stack.push(index);
         for (int i=index; i<inserted-1; i++){
             arr[i] = arr[i+1];
         }
-        arr[inserted] = 0;
         inserted = inserted - 1;
-
     }
 
     @Override
@@ -78,8 +73,8 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer successor(Integer index) {
-        if (inserted < index || index < 0 || inserted < 2 || this.maximum() == arr[index])
-            throw new IllegalArgumentException("Wrong input");
+        if (inserted < index || index < 0 || inserted < 2 || this.maximum() == index)
+            throw new IllegalArgumentException("No successor");
         int output = maximum();
         for (int i=0; i<inserted; i++){
             if (arr[index] < arr[i] && arr[i] < arr[output])
@@ -90,8 +85,8 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer predecessor(Integer index) {
-        if (inserted < index || index < 0 || inserted < 2 || this.minimum() == arr[index])
-            throw new IllegalArgumentException("Wrong input");
+        if (inserted < index || index < 0 || inserted < 2 || this.minimum() == index)
+            throw new IllegalArgumentException("No predecessor");
         int output = minimum();
         for (int i=0; i<inserted; i++){
             if (arr[index] > arr[i] && arr[i] > arr[output])
@@ -102,15 +97,16 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public void backtrack() {
-        // TODO: implement your code here
         if ( !stack.isEmpty() ){
             int index = (int) stack.pop();
             int value = (int) stack.pop();
-            if ( index < arr.length )
-                delete(index-1);
+            if ( index == -1 ) {
+                delete(inserted -1);
+                stack.pop();
+                stack.pop();
+            }
             else{
-                index = index - arr.length;
-                for (int i=inserted; i>=index; i--){
+                for (int i = inserted - 1; i >= index; i--){
                     arr[i+1] = arr[i];
                 }
                 arr[index] = value;
@@ -128,7 +124,6 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public void print() {
-        // TODO: implement your code here
         String str = "";
         if ( inserted > 0 )
             str = str + Integer.toString(arr[0]);
