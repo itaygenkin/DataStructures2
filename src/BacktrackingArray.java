@@ -47,6 +47,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
         for (int i=index; i<inserted-1; i++){
             arr[i] = arr[i+1];
         }
+        arr[inserted] = 0;
         inserted = inserted - 1;
 
     }
