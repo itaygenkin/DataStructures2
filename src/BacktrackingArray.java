@@ -27,7 +27,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
     }
 
     @Override
-    public void insert(Integer x) { //What to do if arr is full?
+    public void insert(Integer x) {
         // TODO: implement your code here
         if (inserted >= arr.length)
             throw new IllegalArgumentException("The array is full!");
