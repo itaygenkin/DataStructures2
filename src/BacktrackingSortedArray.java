@@ -89,34 +89,30 @@ public class BacktrackingSortedArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer minimum() {
-        if ( inserted > 0 )
-            return arr[0];
-        else
-    	    return null;
+        if ( inserted == 0 )
+            throw new IllegalArgumentException("Array is empty");
+        return 0;
     }
 
     @Override
     public Integer maximum() {
-        if (inserted > 0)
-    	    return arr[inserted-1];
-        else
-            return null;
+        if ( inserted == 0 )
+            throw new IllegalArgumentException("Array is empty");
+        return inserted-1;
     }
 
     @Override
     public Integer successor(Integer index) {
         if ( index < 0 || index >= inserted - 1 )
             throw new IllegalArgumentException("Index out of bounds");
-        else
-    	    return arr[index+1];
+        return index+1;
     }
 
     @Override
     public Integer predecessor(Integer index) {
         if ( index < 1 || index >= inserted )
             throw new IllegalArgumentException("Index out of bounds");
-        else
-            return arr[index-1];
+        return index-1;
     }
 
     @Override
