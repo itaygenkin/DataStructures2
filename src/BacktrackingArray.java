@@ -3,7 +3,7 @@
 public class BacktrackingArray implements Array<Integer>, Backtrack {
     private Stack stack;
     private int[] arr;
-    private int inserted = 0;
+    private int inserted = 0;       // a new field to keep track of how many values are inserted
 
     // Do not change the constructor's signature
     public BacktrackingArray(Stack stack, int size) {
@@ -13,7 +13,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
 
     @Override
     public Integer get(int index){
-    	return arr[index]; // temporal return command to prevent compilation error
+    	return arr[index];
     }
 
     @Override
@@ -22,7 +22,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             if (arr[i] == k)
                 return i;
         }
-    	return -1; // temporal return command to prevent compilation error
+    	return -1;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
         if (inserted >= arr.length)
             throw new IllegalArgumentException("The array is full!");
         stack.push(x);
-        stack.push(-1);
+        stack.push(-1);         // a flag to remember that an insert happened
         arr[inserted] = x;
         inserted = inserted + 1;
     }
@@ -39,7 +39,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
     public void delete(Integer index) {
         if (index >= arr.length)
             throw new IllegalArgumentException("Index out of bounds");
-        stack.push(arr[index]);
+        stack.push(arr[index]);         //an index if the delete will never be negative
         stack.push(index);
         for (int i=index; i<inserted-1; i++){
             arr[i] = arr[i+1];
@@ -56,7 +56,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             if ( arr[min] > arr[i] )
                 min = i;
         }
-    	return min; // temporal return command to prevent compilation error
+    	return min;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             if ( arr[max] < arr[i] )
                 max = i;
         }
-    	return max; // temporal return command to prevent compilation error
+    	return max;
     }
 
     @Override
@@ -100,8 +100,8 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
         if ( !stack.isEmpty() ){
             int index = (int) stack.pop();
             int value = (int) stack.pop();
-            if ( index == -1 ) {
-                delete(inserted -1);
+            if ( index == -1 ) {            //then we are backtracking from an insert
+                delete(inserted -1);   //insert will alwas be the last value
                 stack.pop();
                 stack.pop();
             }
