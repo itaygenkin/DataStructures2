@@ -21,11 +21,11 @@ public class Question4 {
 	
 	public static String section_ii() {
 		String answer = null;
-		// answer = "Tetha(1)";
+		 answer = "Tetha(1)";
 		// answer = "Tetha(log(log(n)))";
 		// answer = "Tetha(log(n))";
 		// answer = "Tetha(sqrt(n))"; // sqrt is an abbreviation for square root
-		answer = "Tetha(n)";
+		//answer = "Tetha(n)";
 		// answer = "Tetha(n^(3/2))";
 		// answer = "Tetha(nlog(n))";
 		// answer = "Tetha(nlog^2(n))";

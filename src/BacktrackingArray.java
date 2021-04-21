@@ -41,9 +41,7 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             throw new IllegalArgumentException("Index out of bounds");
         stack.push(arr[index]);         //an index if the delete will never be negative
         stack.push(index);
-        for (int i=index; i<inserted-1; i++){
-            arr[i] = arr[i+1];
-        }
+        arr[index] = arr[inserted-1]; //our array is unsorted, that means we don't care about the order
         inserted = inserted - 1;
     }
 
@@ -101,14 +99,12 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             int index = (int) stack.pop();
             int value = (int) stack.pop();
             if ( index == -1 ) {            //then we are backtracking from an insert
-                delete(inserted -1);   //insert will alwas be the last value
-                stack.pop();
+                delete(inserted -1);   //insert will always be the last value
+                stack.pop();            // we got 2 new unwanted objects
                 stack.pop();
             }
             else{
-                for (int i = inserted - 1; i >= index; i--){
-                    arr[i+1] = arr[i];
-                }
+                arr[inserted] = arr[index];
                 arr[index] = value;
                 inserted = inserted + 1;
             }
