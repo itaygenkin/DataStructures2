@@ -13,7 +13,7 @@ public class Warmup {
                 i = i - back;
             }
         }
-    	return -1; // temporal return command to prevent compilation error
+    	return -1;
     }
 
     public static int consistentBinSearch(int[] arr, int x, Stack myStack) {

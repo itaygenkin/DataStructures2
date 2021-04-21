@@ -44,11 +44,11 @@ public class BacktrackingArray implements Array<Integer>, Backtrack {
             throw new IllegalArgumentException("Index out of bounds");
         stack.push(arr[index]);
         stack.push(index + arr.length);
-        for (int i=index; i<inserted-1; i++){
-            arr[i] = arr[i+1];
-        }
+//        for (int i=index; i<inserted-1; i++){
+//            arr[i] = arr[i+1];
+//        }
+        arr[index] = arr[inserted-1];
         inserted = inserted - 1;
-
     }
 
     @Override
