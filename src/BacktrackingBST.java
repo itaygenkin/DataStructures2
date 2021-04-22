@@ -74,40 +74,58 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 else{
                     node.removeFromParent();
                 }
-                Object[] memoArray = {node, false};      //will be used in backtracking
+                Object[] memoArray = {false, node};      //will be used in backtracking
                 stack.push(memoArray);
             }
             else
-                replaceNode(node);
+                deleteNotLeaf(node);
         }
     }
 
     //a helper function to make sure when a node is deleted that the tree is still a legal binary tree
-    private void replaceNode (Node node){ //we assume node has at least one child
-        Node parentMemo = null;
-        Node leftChildMemo = null;
-        boolean deleted2 = false;
-        Node replace = node.right;
-        if (node.right == null)         //if it only has child in left
-            replace = node.left;
-        if (node.left != null && node.right != null){ // has 2 children
-            deleted2 = true;
-            replace = node.left;
-            while ( replace.right != null) {
-                replace = replace.right;
-            }
-            parentMemo = replace.parent;
-            leftChildMemo = replace.left;
-            delete(replace);                //making sure we keep the predecessor children
-            stack.pop();
-            replace.setLeft(node.left);
-            replace.setRight(node.right);
+    private void deleteNotLeaf (Node node) { //we assume node has at least one child
+        Object[] memoArray = new Object[3];
+        memoArray[0] = false;
+        memoArray[1] = node;
+        if (node.right != null && node.left != null) {
+            memoArray[2] = restructure(node);       //this will return another array but that is why we are using a Object array
+            //need to be vary careful when using the backtrack later on
+            memoArray[0] = true;
         }
-        if(replace.setParent(node))         //root has been changed while setting the parent node
-            root = replace;
-        node.parent = replace.parent;       //need to make sure we dont lose the parent
-        Object[] memoArray = {node, deleted2, replace, parentMemo, leftChildMemo}; //will be used in backtracking
+        else{
+            if (node.right != null) {
+                if (node == root)
+                    root = node.right;
+                else {
+                    if (node.isLeftChild() > 0)
+                        node.parent.setLeft(node.right);
+                    else
+                        node.parent.setRight(node.right);
+                }
+
+            }
+            else {
+                if(node == root)
+                    root = node.left;
+                else{
+                    if(node.isLeftChild() > 0)
+                        node.parent.setLeft(node.left);
+                    else
+                        node.parent.setRight(node.left);
+                }
+            }
+        }
         stack.push(memoArray);
+    }
+
+    private Object[] restructure(Node node){
+        Node replacement = predecessor(node);       //since node has 2 children there will always be a predecessor
+        Object[] memoArray = {replacement, replacement.left, replacement.parent}; //we will keep the pointers for the backtrack
+        delete(replacement);
+        stack.pop();                        //dont want to keep the replacement in the stack just yet
+        if(replacement.replace(node))       //will happen only if node is the old root
+            root = replacement;
+        return memoArray;
     }
 
     public Node minimum() {
@@ -170,21 +188,23 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     public void backtrack() {       //we will assume here that the stack wasn't changed
         if (!stack.isEmpty()){
             Object[] arr1 = (Object[]) stack.pop();
-            if(arr1.length == 1) {                      //then we need to backtrack from an insert which will always be a leaf
+            if(arr1.length == 1) {                      //then we need to backtrack from an insert
                 delete((Node) arr1[0]);
                 redoStack.push(stack.pop());            //in delete we update the stack but we want to keep the value in the redoStack
             }
             else {
-                if (! ((boolean) arr1[1]))                //then we need to backtrack from a delete of 1
-                    backtrackFromDelete((Node) arr1[0]);
+                if (! ((boolean) arr1[0]))                //then we need to backtrack from a delete of 1
+                    backtrackFromDelete((Node) arr1[1]);
                 else {                                      //we are backtracking from a delete and a node that was moved
-                    backtrackFrom2Deletes((Node) arr1[0], (Node) arr1[2], (Node) arr1[3], (Node) arr1[4]);
+                    Object[] arr2 = (Object[]) arr1[2];     //we made sure that there is a true in the array only if we restructured
+                    backtrackFromRestructure((Node) arr1[1], (Node) arr2[0], (Node) arr2[1], (Node) arr2[2]);
                 }
             }
         }
     }
 
     //helper function to backtrack from a single delete
+    //meaning the node only holds 1 child
     public void backtrackFromDelete(Node node){
         if(node.right == null & node.left == null){ // is a leaf
             insert(node);
@@ -192,12 +212,21 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         }
         else {
             if (node.left != null) {
-                if (node.setParent(node.left))       //root has been changed
+                if (node.left.isLeftChild() == 0)
                     root = node;
+                if (node.left.isLeftChild() > 0)
+                    node.parent.setLeft(node);
+                else
+                    node.parent.setRight(node);
                 node.setLeft(node.left);
-            } else {
-                if (node.setParent(node.right))      //root hase been changed
+            }
+            else{
+                if (node.right.isLeftChild() == 0)
                     root = node;
+                if (node.right.isLeftChild() > 0)
+                    node.parent.setLeft(node);
+                else
+                    node.parent.setRight(node);
                 node.setRight(node.right);
             }
             Object[] memoArray = {node};
@@ -206,18 +235,16 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     }
 
     //helper function to come back if we deleted 2 nodes
-    public void backtrackFrom2Deletes(Node firstDelete, Node secondDelete, Node memoParent, Node memoLeftChild){
-        if(firstDelete.setParent(secondDelete))
-            root = firstDelete;
-        firstDelete.setRight(firstDelete.right);        //since we keept all the node pointers we can come back from a delete by setting  all the pointers back
-        firstDelete.setLeft(firstDelete.left);
-        if(memoParent.right != firstDelete){
-            secondDelete.parent = memoParent;
-            memoParent.left = secondDelete;
-        }
-        secondDelete.setLeft(memoLeftChild);
-        secondDelete.right = null;
-        Object [] memoArray = {firstDelete};
+    public void backtrackFromRestructure(Node deleted, Node restructured, Node memoLeftChild, Node memoParent){
+        if(deleted.replace(restructured))       //root has been changed during the replacement
+            root = deleted;
+        restructured.setLeft(memoLeftChild);
+        restructured.setRight(null);
+        if (memoParent == deleted)          //the restructured node will always be a right child unless it is deleted child
+            deleted.setLeft(restructured);
+        else
+            memoParent.setRight(restructured);
+        Object [] memoArray = {deleted};
         redoStack.push(memoArray);
     }
 
@@ -226,10 +253,10 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         if (!redoStack.isEmpty()){
             Object [] arr = (Object[]) redoStack.pop();
             if(arr.length == 1){
-                delete((Node) arr[0]);      // need to retrack from a insert
+                delete((Node) arr[0]);      // need to retrack from an insert
             }
             else
-                insert((Node) arr[0]);      //need to retrack from a delete
+                insert((Node) arr[1]);      //need to retrack from a delete
         }
     }
 
@@ -273,6 +300,24 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 newNode.parent = this;
         }
 
+        // a function to set replace the oldNode will return true if it changed the root
+        //the function will not change the oldNode
+        public boolean replace(Node oldNode){
+            this.setRight(oldNode.right);
+            this.setLeft(oldNode.left);
+            this.removeFromParent();
+            if (oldNode.parent != null){
+                if (oldNode.isLeftChild() > 0)
+                    oldNode.parent.setLeft(this);
+                else
+                    oldNode.parent.setRight(this);
+                return false;
+            }
+
+            this.parent = null;     //the node has no parent meaning it was a root
+            return true;
+        }
+
         // a function to set parent to replace the oldNode will return true if it changed the root
         public boolean setParent(Node oldNode){
             if(oldNode.parent != null) {
@@ -288,15 +333,31 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
             return true;
         }
 
+        //return 1 if ture -1 if false and 0 if there is no parent
+        public int isLeftChild(){
+            if (parent !=null) {
+                if (this.parent.left == this)
+                    return 1;
+                return -1;
+            }
+            return 0;
+        }
+
+        public int isRightChild(){
+            if (parent !=null) {
+                if (this.parent.right == this)
+                    return 1;
+                return -1;
+            }
+            return 0;
+        }
+
         //removes the node from the parent
         public void removeFromParent() {
-            if (this.parent != null){
-                if (this.parent.right == this)
-                    this.parent.right = null;
-                if (this.parent.left == this)
-                    this.parent.left = null;
-            }
-
+            if (this.isRightChild() > 0)
+                this.parent.right =null;
+            if (this.isLeftChild() > 0)
+                this.parent.left = null;
         }
 
         public int getKey() {
