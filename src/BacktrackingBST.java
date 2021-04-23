@@ -1,8 +1,8 @@
 import java.util.NoSuchElementException;
 
 public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> {
-    private Stack stack;
-    private Stack redoStack;
+    private final Stack stack;
+    private final Stack redoStack;
     private BacktrackingBST.Node root = null;
 
     // Do not change the constructor's signature
@@ -92,7 +92,8 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 else{
                     node.removeFromParent();
                 }
-                Object[] memoArray = {node, depth, false};      //will be used in backtracking
+                boolean isLeaf = node.left == null && node.right == null;
+                Object[] memoArray = {node, depth, false, isLeaf};      //will be used in backtracking
                 stack.push(memoArray);
             }
             else
@@ -182,47 +183,20 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
     @Override
     public void backtrack() {       //we will assume here that the stack wasn't changed
         // TODO: implement your code here
-        if (!stack.isEmpty()){
-            Object[] arr1 = (Object[]) stack.pop();
-            if(arr1.length == 1) {                      //then we need to backtrack from an insert
-                delete((Node) arr1[0]);
-                redoStack.push(stack.pop());
-            }
-            else {
-                if (! ((boolean) arr1[1]))                //then we need to backtrack from a delete of 1
-                    backtrackFromDelete((Node) arr1[0]);
-                else {                                      //we are backtracking from a delete of 2
-                    backtrackFrom2Deletes((Node) arr1[0], (Node) arr1[2], (Node) arr1[3], (Node) arr1[4]);
+        if ( !stack.isEmpty() ){
+            Object [] arr = (Object[]) redoStack.pop();
+            if ( arr.length == 1 )
+                delete((Node) arr[0]);
+            else{
+                if ( (boolean) arr[3] ) // if the node is leaf
+                    insert((Node) arr[0]);
+                else{
+
                 }
             }
         }
     }
 
-    public void backtrackFromDelete(Node node){
-        if(node.left != null) {
-            if(node.setParent(node.left))
-                root = node;
-            node.setLeft(node.left);
-        }
-        if(node.right !=null) {
-            if(node.setParent(node.right))
-                root = node;
-            node.setRight(node.right);
-        }
-        Object [] memoArray = {node};
-        redoStack.push(memoArray);
-    }
-
-    public void backtrackFrom2Deletes(Node firstDelete, Node secondDelete, Node memoParent, Node memoLeftChild){
-        if(firstDelete.setParent(secondDelete))
-            root = firstDelete;
-        firstDelete.setRight(firstDelete.right);
-        firstDelete.setLeft(firstDelete.left);
-        secondDelete.setParent(memoParent);
-        secondDelete.setLeft(memoLeftChild);
-        Object [] memoArray = {firstDelete};
-        redoStack.push(memoArray);
-    }
 
     @Override
     public void retrack() {
@@ -238,9 +212,9 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
 
     public void printPreOrder(){
         if ( root == null )
-            System.out.println("");
+            System.out.println();
         else
-            System.out.println(root.toString());
+            System.out.println(root);
     }
 
     @Override
@@ -254,8 +228,8 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
         public BacktrackingBST.Node right;
 
         private BacktrackingBST.Node parent;
-        private int key;
-        private Object value;
+        private final int key;
+        private final Object value;
 
         public Node(int key, Object value) {
             this.key = key;
@@ -312,13 +286,20 @@ public class BacktrackingBST implements Backtrack, ADTSet<BacktrackingBST.Node> 
                 return str;
             else {
                 if ( left != null )
-                    str = str + " " + left.toString();
+                    str = str + " " + left;
                 if ( right != null )
-                    str = str + " " + right.toString();
+                    str = str + " " + right;
             }
             return str;
         }
 
+        public boolean isLeftChild (){
+            return this != null && this.parent != null && this.parent.left.key == this.key;
+        }
+
+        public boolean isRightChild (){
+            return this != null && this.parent != null && this.parent.right.key == this.key;
+        }
 
     }
 
